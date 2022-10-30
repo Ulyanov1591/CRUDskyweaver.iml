@@ -1,6 +1,5 @@
 package com.godov.crudskyweaver.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.godov.crudskyweaver.dto.MatchDTO;
 import com.godov.crudskyweaver.enums.Hero;
@@ -11,16 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,12 +38,16 @@ class MatchControllerIntegrationTest {
     @Test
     void findAll() throws Exception {
         //given
-        List<MatchDTO> listToReturn = new ArrayList<>();
-        when(matchService.findAll()).thenReturn(listToReturn);
+        Optional<Integer> page = Optional.empty();
+        Optional<Integer> size = Optional.empty();
+        Optional<String> sortBy = Optional.empty();
+        Optional<String> order = Optional.empty();
+        Page<MatchDTO> pageToReturn = Page.empty();
+
+        when(matchService.findAll(page, size, sortBy, order)).thenReturn(pageToReturn);
         //when then
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/matches"))
-                .andExpect(status().isOk())
-                .andReturn();
+        mockMvc.perform(get("/api/v1/matches"))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -68,7 +69,7 @@ class MatchControllerIntegrationTest {
                 .andExpect(jsonPath("$.myHero", equalTo(Hero.ADA.toString())))
                 .andExpect(jsonPath("$.opponentHero", equalTo(Hero.SAMYA.toString())))
                 .andExpect(jsonPath("$.result", equalTo(Result.WIN.toString())))
-                .andExpect(jsonPath("$.playedOn", equalTo(LocalDate.now().toString())));;
+                .andExpect(jsonPath("$.playedOn", equalTo(LocalDate.now().toString())));
     }
 
     @Test
@@ -147,6 +148,7 @@ class MatchControllerIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message", equalTo("Match not found for this id :: " + nonExistentId)));
     }
+
     @Test
     void updateExistingEntityThenReturnUpdatedMatchDTO() throws Exception {
         //given

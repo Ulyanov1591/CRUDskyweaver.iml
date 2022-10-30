@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.godov.crudskyweaver.dto.MatchDTO;
 import com.godov.crudskyweaver.enums.Hero;
 import com.godov.crudskyweaver.enums.Result;
-import com.godov.crudskyweaver.exceptions.NoSuchMatchFoundException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,20 +12,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Sql(value = {"/sql/set-up-db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/clear-db.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class MatchControllerAcceptanceTest {
     @Autowired
     MockMvc mockMvc;
@@ -36,21 +30,38 @@ class MatchControllerAcceptanceTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("Should return list of DTOs with the size 3")
-    @Sql(value = {"/sql/set-up-db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    void findAllThenReturnListOfDTO() throws Exception {
+    @DisplayName("Should return page of DTOs with size 20, page 0 and the number of elements 20")
+    void findAllThenReturnPageOfDTO() throws Exception {
         //when then
         mockMvc.perform(get("/api/v1/matches"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id", equalTo(1)))
-                .andExpect(jsonPath("$[1].id", equalTo(2)))
-                .andExpect(jsonPath("$[2].id", equalTo(3)));
+                .andExpect(jsonPath("$.content[0].id", equalTo(24)))
+                .andExpect(jsonPath("$.content[1].id", equalTo(23)))
+                .andExpect(jsonPath("$.content[19].id", equalTo(5)))
+                .andExpect(jsonPath("$.size", equalTo(20)))
+                .andExpect(jsonPath("$.number", equalTo(0)))
+                .andExpect(jsonPath("$.totalPages", equalTo(2)))
+                .andExpect(jsonPath("$.numberOfElements", equalTo(20)));
+    }
+
+    @Test
+    @DisplayName("Should return page of DTOs with size 20, number 1 and the number of elements 4 and offset 20")
+    void findAllWhenRequestParamsNotNullThenReturnPageOfDTO() throws Exception {
+        //when then
+        mockMvc.perform(get("/api/v1/matches?page=1&size=20&sortBy=playedOn&order=desc"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content[3].id", equalTo(14)))
+                .andExpect(jsonPath("$.content[3].playedOn", equalTo("2022-10-15")))
+                .andExpect(jsonPath("$.size", equalTo(20)))
+                .andExpect(jsonPath("$.number", equalTo(1)))
+                .andExpect(jsonPath("$.pageable.offset", equalTo(20)))
+                .andExpect(jsonPath("$.numberOfElements", equalTo(4)));
     }
 
     @Test
     @DisplayName("Should return DTO of saved entity")
-    @Sql(value = {"/sql/set-up-db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void saveThenReturnSavedDTO() throws Exception {
         //given
         MatchDTO requestBody = MatchDTO.builder()
@@ -66,7 +77,7 @@ class MatchControllerAcceptanceTest {
                         .content(objectMapper.writeValueAsBytes(requestBody)))
                 .andExpect(status().is(201))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo(4)))
+                .andExpect(jsonPath("$.id", equalTo(25)))
                 .andExpect(jsonPath("$.myHero", equalTo(Hero.ADA.toString())))
                 .andExpect(jsonPath("$.opponentHero", equalTo(Hero.SAMYA.toString())))
                 .andExpect(jsonPath("$.result", equalTo(Result.WIN.toString())))
@@ -75,7 +86,6 @@ class MatchControllerAcceptanceTest {
 
     @Test
     @DisplayName("Should return DTO of found entity")
-    @Sql(value = {"/sql/set-up-db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findByValidIdThenReturnMatchDTO() throws Exception {
         //when then
         mockMvc.perform(get("/api/v1/matches/{id}", 1L))
@@ -85,15 +95,14 @@ class MatchControllerAcceptanceTest {
                 .andExpect(jsonPath("$.myHero", equalTo(Hero.ADA.toString())))
                 .andExpect(jsonPath("$.opponentHero", equalTo(Hero.SAMYA.toString())))
                 .andExpect(jsonPath("$.result", equalTo(Result.WIN.toString())))
-                .andExpect(jsonPath("$.playedOn", equalTo(LocalDate.of(2022,10,20).toString())));
+                .andExpect(jsonPath("$.playedOn", equalTo(LocalDate.of(2022, 10, 26).toString())));
     }
 
     @Test
     @DisplayName("Should throw not found exception")
-    @Sql(value = {"/sql/set-up-db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findByInvalidIdThenThrow() throws Exception {
         //given
-        Long nonExistentId = 4L;
+        Long nonExistentId = 0L;
         //when then
         mockMvc.perform(get("/api/v1/matches/{id}", nonExistentId))
                 .andExpect(status().is(404))
@@ -103,7 +112,6 @@ class MatchControllerAcceptanceTest {
 
     @Test
     @DisplayName("Should delete entity and return deleted DTO")
-    @Sql(value = {"/sql/set-up-db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteWhenIdIsValidThenReturnDeletedMatchDTO() throws Exception {
         //when then
         mockMvc.perform(delete("/api/v1/matches/{id}", 1L))
@@ -113,15 +121,14 @@ class MatchControllerAcceptanceTest {
                 .andExpect(jsonPath("$.myHero", equalTo(Hero.ADA.toString())))
                 .andExpect(jsonPath("$.opponentHero", equalTo(Hero.SAMYA.toString())))
                 .andExpect(jsonPath("$.result", equalTo(Result.WIN.toString())))
-                .andExpect(jsonPath("$.playedOn", equalTo(LocalDate.of(2022,10,20).toString())));
+                .andExpect(jsonPath("$.playedOn", equalTo(LocalDate.of(2022, 10, 26).toString())));
     }
 
     @Test
     @DisplayName("Should throw not found exception")
-    @Sql(value = {"/sql/set-up-db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteWhenIdInvalidThenThrow() throws Exception {
         //given
-        Long nonExistentId = 4L;
+        Long nonExistentId = 0L;
         //when then
         mockMvc.perform(delete("/api/v1/matches/{id}", nonExistentId))
                 .andExpect(status().is(404))
@@ -131,7 +138,6 @@ class MatchControllerAcceptanceTest {
 
     @Test
     @DisplayName("Should update entity and return updated DTO")
-    @Sql(value = {"/sql/set-up-db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void updateExistingEntityThenReturnUpdatedMatchDTO() throws Exception {
         //given
         MatchDTO requestBody = MatchDTO.builder()

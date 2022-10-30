@@ -8,12 +8,13 @@ public enum Result {
     DRAW("DRAW");
 
     String result;
+
     Result(String result) {
         this.result = result;
     }
 
     @JsonCreator
-    public static Result fromString(String result){
+    public static Result fromString(String result) {
         return Result.valueOf(result.toUpperCase());
     }
 }

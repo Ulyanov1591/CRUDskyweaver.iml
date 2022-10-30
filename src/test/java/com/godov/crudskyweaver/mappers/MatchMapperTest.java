@@ -5,22 +5,21 @@ import com.godov.crudskyweaver.enums.Hero;
 import com.godov.crudskyweaver.enums.Result;
 import com.godov.crudskyweaver.models.Match;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class MatchMapperTest {
     private static MatchMapper mapper;
 
     @BeforeAll
-    public static void setUp(){
+    public static void setUp() {
         mapper = new MatchMapperImpl();
     }
 
@@ -149,7 +148,7 @@ class MatchMapperTest {
     }
 
     @Test
-    public void doesNotUpdateDateToAnythingAfterToday(){
+    public void doesNotUpdateDateToAnythingAfterToday() {
         //given
         Match matchEntity = Match.builder()
                 .id(1L)
@@ -184,16 +183,17 @@ class MatchMapperTest {
                 .playedOn(LocalDate.now())
                 .result(Result.WIN)
                 .build();
-        List<Match> listToMap = new ArrayList<>();
-        listToMap.add(matchEntity1);
-        listToMap.add(matchEntity2);
+        List<Match> listOfEntities = new ArrayList<>();
+        listOfEntities.add(matchEntity1);
+        listOfEntities.add(matchEntity2);
+        Page<Match> pageToMap = new PageImpl<>(listOfEntities);
         //when
-        List<MatchDTO> listAfterMapping = mapper.mapAllToDTO(listToMap);
+        Page<MatchDTO> pageAfterMapping = mapper.mapAllToDTO(pageToMap);
         //then
         assertAll(
                 () -> {
-                    assertEquals(listAfterMapping.get(0).hashCode(), listToMap.get(0).hashCode());
-                    assertEquals(listAfterMapping.get(0).hashCode(), listToMap.get(0).hashCode());
+                    assertEquals(pageAfterMapping.getContent().get(0).hashCode(), listOfEntities.get(0).hashCode());
+                    assertEquals(pageAfterMapping.getContent().get(0).hashCode(), listOfEntities.get(0).hashCode());
                 });
     }
 }

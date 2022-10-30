@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.godov.crudskyweaver.enums.Hero;
 import com.godov.crudskyweaver.enums.Result;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -24,7 +22,7 @@ public class MatchDTO {
     @NotNull
     private Result result;
     @JsonSerialize(as = LocalDate.class)
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate playedOn;
 
     @Override

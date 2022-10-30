@@ -2,7 +2,10 @@ package com.godov.crudskyweaver.models;
 
 import com.godov.crudskyweaver.enums.Hero;
 import com.godov.crudskyweaver.enums.Result;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;

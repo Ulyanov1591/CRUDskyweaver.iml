@@ -1,7 +1,6 @@
 package com.godov.crudskyweaver.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Hero {
     ADA("ADA"),
@@ -21,7 +20,8 @@ public enum Hero {
     MAI("MAI");
 
     private String hero;
-    Hero (String hero){
+
+    Hero(String hero) {
         this.hero = hero;
     }
 

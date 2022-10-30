@@ -3,16 +3,20 @@ package com.godov.crudskyweaver.services;
 import com.godov.crudskyweaver.dto.MatchDTO;
 import com.godov.crudskyweaver.exceptions.NoSuchMatchFoundException;
 import com.godov.crudskyweaver.mappers.MatchMapper;
-import com.godov.crudskyweaver.repository.MatchRepository;
 import com.godov.crudskyweaver.models.Match;
+import com.godov.crudskyweaver.repository.MatchRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,21 +29,36 @@ class MatchServiceTest {
     private MatchService matchService;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         matchService = new MatchService(matchRepository, mapper);
     }
 
-
     @Test
     void canFindAll() {
-        //when
-        matchService.findAll();
-        //then
-        verify(matchRepository).findAll();
-        List<Match> listOfMatches = matchRepository.findAll();
-        verify(mapper).mapAllToDTO(listOfMatches);
-    }
+        //given
+        Optional<Integer> page = Optional.empty();
+        Optional<Integer> size = Optional.empty();
+        Optional<String> sortBy = Optional.empty();
+        Optional<String> order = Optional.empty();
+        Page<Match> pageToReturn = Page.empty();
 
+        when(matchRepository.findAll(
+                PageRequest.of(
+                        page.orElse(0),
+                        size.orElse(20),
+                        Sort.Direction.fromString(order.orElse("desc")),
+                        sortBy.orElse("id")))).thenReturn(pageToReturn);
+        //when
+        matchService.findAll(page, size, sortBy, order);
+        //then
+        verify(matchRepository).findAll(
+                PageRequest.of(
+                        0,
+                        20,
+                        Sort.Direction.DESC,
+                        "id"));
+        verify(mapper).mapAllToDTO(pageToReturn);
+    }
 
     @Test
     void canSave() {
