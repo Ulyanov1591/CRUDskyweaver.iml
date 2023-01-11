@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Configure the database connection here -->
+    <jdbc>
+        <driver>org.postgresql.Driver</driver>
+        <url>jdbc:postgresql://localhost:5432/myskyweaverstats</url>
+        <user>postgres</user>
+        <password>7158891591</password>
+    </jdbc>
+    <generator>
+        <database>
+            <!-- The database dialect from jooq-meta. -->
+            <name>org.jooq.meta.postgres.PostgresDatabase</name>
+            <includes>.*</includes>
+            <!-- All elements that are excluded from your schema -->
+            <excludes>
+                    databasechangelog
+                |   databasechangeloglock
+            </excludes>
+            <inputSchema>public</inputSchema>
+
+            <forcedTypes>
+                <forcedType>
+                    <!-- Specify the Java type of your custom type. This corresponds to the Converter's <U> type. -->
+                    <userType>com.godov.crudskyweaver.enums.Hero</userType>
+                    <!-- Apply the built in org.jooq.impl.EnumConverter. -->
+                    <enumConverter>true</enumConverter>
+                    <!-- A Java regex matching fully-qualified columns, attributes, parameters. Use the pipe to separate several expressions. -->
+                    <includeExpression>.*_hero</includeExpression>
+                    <includeTypes>hero_enum</includeTypes>
+                </forcedType>
+                <forcedType>
+                    <userType>com.godov.crudskyweaver.enums.Result</userType>
+                    <enumConverter>true</enumConverter>
+                    <includeExpression>result</includeExpression>
+                    <includeTypes>result_enum</includeTypes>
+                </forcedType>
+            </forcedTypes>
+
+        </database>
+        <generate/>
+        <target>
+            <!-- The destination package of your generated classes (within the
+                 destination directory) -->
+            <packageName>com.godov.crudskyweaver.domain.jooq</packageName>
+
+            <!-- The destination directory of your generated classes -->
+            <directory>src/main/java</directory>
+        </target>
+    </generator>
+</configuration>

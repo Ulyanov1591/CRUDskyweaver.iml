@@ -1,156 +1,106 @@
 package com.godov.crudskyweaver.services;
 
-import com.godov.crudskyweaver.dto.MatchDTO;
-import com.godov.crudskyweaver.exceptions.NoSuchMatchFoundException;
-import com.godov.crudskyweaver.mappers.MatchMapper;
-import com.godov.crudskyweaver.models.Match;
+import com.godov.crudskyweaver.dto.match.MatchDTORequest;
 import com.godov.crudskyweaver.repository.MatchRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
+import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class MatchServiceTest {
 
     @Mock
     private MatchRepository matchRepository;
-    @Mock
-    private MatchMapper mapper;
     private MatchService matchService;
 
     @BeforeEach
     void setUp() {
-        matchService = new MatchService(matchRepository, mapper);
+        matchService = new MatchService(matchRepository);
     }
 
     @Test
     void canFindAll() {
         //given
-        Optional<Integer> page = Optional.empty();
-        Optional<Integer> size = Optional.empty();
-        Optional<String> sortBy = Optional.empty();
-        Optional<String> order = Optional.empty();
-        Page<Match> pageToReturn = Page.empty();
-
-        when(matchRepository.findAll(
-                PageRequest.of(
-                        page.orElse(0),
-                        size.orElse(20),
-                        Sort.Direction.fromString(order.orElse("desc")),
-                        sortBy.orElse("id")))).thenReturn(pageToReturn);
+        Pageable pageable = mock(Pageable.class);
         //when
-        matchService.findAll(page, size, sortBy, order);
+        matchService.findAll(pageable);
         //then
-        verify(matchRepository).findAll(
-                PageRequest.of(
-                        0,
-                        20,
-                        Sort.Direction.DESC,
-                        "id"));
-        verify(mapper).mapAllToDTO(pageToReturn);
+        verify(matchRepository).findAll(pageable);
+
     }
 
     @Test
-    void canSave() {
+    void canChangePlayedOnFieldIfNullToNowAndThenSave() {
         //given
-        MatchDTO matchDTO = mock(MatchDTO.class);
-        Match matchEntityBeforeSave = mock(Match.class);
-        Match matchEntityAfterSave = mock(Match.class);
-
-        when(mapper.mapToEntity(matchDTO)).thenReturn(matchEntityBeforeSave);
-        when(matchRepository.save(matchEntityBeforeSave)).thenReturn(matchEntityAfterSave);
+        MatchDTORequest matchDTORequestWithPlayedOnNull = MatchDTORequest
+                .builder()
+                .playedOn(null)
+                .build();
         //when
-        matchService.save(matchDTO);
+        matchService.save(matchDTORequestWithPlayedOnNull);
         //then
-        verify(mapper).mapToEntity(matchDTO);
-        verify(matchRepository).save(matchEntityBeforeSave);
-        verify(mapper).mapToDTO(matchEntityAfterSave);
+        assertEquals(LocalDate.now(), matchDTORequestWithPlayedOnNull.getPlayedOn());
+        verify(matchRepository).save(matchDTORequestWithPlayedOnNull);
     }
 
-    @Test
-    void shouldNotFindByIdAndThrowException() {
-        //given
-        Long nonExistentId = 0L;
-        Optional<Match> nonExistentMatchEntity = Optional.empty();
 
-        when(matchRepository.findById(nonExistentId)).thenReturn(nonExistentMatchEntity);
-        //when
-        //then
-        assertThrows(
-                NoSuchMatchFoundException.class,
-                () -> matchService.findById(nonExistentId));
+        @Test
+        void canChangePlayedOnFieldIAfterLocalDateNowToNowAndThenSave() {
+            //given
+            MatchDTORequest matchDTORequestWithPlayedOnAfterLocalDateNow = MatchDTORequest
+                    .builder()
+                    .playedOn(LocalDate.MAX)
+                    .build();
+            //when
+            matchService.save(matchDTORequestWithPlayedOnAfterLocalDateNow);
+            //then
+            assertEquals(LocalDate.now(), matchDTORequestWithPlayedOnAfterLocalDateNow.getPlayedOn());
+            verify(matchRepository).save(matchDTORequestWithPlayedOnAfterLocalDateNow);
+
+
     }
-
     @Test
     void canFindById() {
         //given
-        Long existingId = 1L;
-        Optional<Match> existingMatchEntity = Optional.of(mock(Match.class));
-        MatchDTO matchDTO = mock(MatchDTO.class);
-
-        when(matchRepository.findById(existingId)).thenReturn(existingMatchEntity);
+        Long validId = 1L;
         //when
-        matchService.findById(existingId);
+        matchService.findById(validId);
         //then
-        verify(matchRepository).findById(existingId);
-        verify(mapper).mapToDTO(existingMatchEntity.get());
+        verify(matchRepository).findById(validId);
     }
 
     @Test
-    void canEitherDeleteByIdOrThrowException() {
+    void canDeleteById() {
         //given
-        Long nonExistentId = 0L;
-        Optional<Match> nonExistentMatchEntity = Optional.empty();
-
         Long existingId = 1L;
-        Optional<Match> existingMatchEntity = Optional.of(mock(Match.class));
-
-        when(matchRepository.findById(nonExistentId)).thenReturn(nonExistentMatchEntity);
-        when(matchRepository.findById(existingId)).thenReturn(existingMatchEntity);
         //when
         matchService.delete(existingId);
         //then
-        verify(matchRepository).findById(existingId);
         verify(matchRepository).deleteById(existingId);
-        verify(mapper).mapToDTO(existingMatchEntity.get());
-
-        assertThrows(
-                NoSuchMatchFoundException.class,
-                () -> matchService.delete(nonExistentId));
-
     }
 
     @Test
-    void update() {
+    void canChangePlayedOnFieldIfAfterLocalDateNowToNullAndThenUpdate() {
         //given
-        Long nonExistentId = 0L;
-        Optional<Match> nonExistentMatchEntity = Optional.empty();
-
-        Long existingId = 1L;
-        Optional<Match> existingMatchEntity = Optional.of(mock(Match.class));
-        MatchDTO matchDTO = mock(MatchDTO.class);
-
-        when(matchRepository.findById(nonExistentId)).thenReturn(nonExistentMatchEntity);
-        when(matchRepository.findById(existingId)).thenReturn(existingMatchEntity);
+        Long validId = 1L;
+        MatchDTORequest matchDTORequestWithPlayedOnAfterLocalDateNow = MatchDTORequest
+                .builder()
+                .playedOn(LocalDate.MAX)
+                .build();
         //when
-        matchService.update(existingId, matchDTO);
+        matchService.update(validId, matchDTORequestWithPlayedOnAfterLocalDateNow);
         //then
-        verify(matchRepository).findById(existingId);
-        verify(mapper).updateEntity(matchDTO, existingMatchEntity.get());
-        verify(mapper).mapToDTO(existingMatchEntity.get());
-
-        assertThrows(
-                NoSuchMatchFoundException.class,
-                () -> matchService.delete(nonExistentId));
+        verify(matchRepository).update(validId, matchDTORequestWithPlayedOnAfterLocalDateNow);
+        assertNull(matchDTORequestWithPlayedOnAfterLocalDateNow.getPlayedOn());
     }
 }

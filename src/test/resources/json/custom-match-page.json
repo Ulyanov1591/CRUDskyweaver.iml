@@ -1,0 +1,10 @@
+{
+  "pageable": {
+    "offset": 20,
+    "pageNumber": 2
+  },
+  "size": 10,
+  "totalElements": 24,
+  "totalPages": 3,
+  "numberOfElements": 4
+}

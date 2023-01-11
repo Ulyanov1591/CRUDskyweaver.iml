@@ -5,12 +5,10 @@ import java.time.LocalDateTime;
 public class ErrorDTO {
     private final LocalDateTime timestamp;
     private final String message;
-    private final String details;
 
-    public ErrorDTO(LocalDateTime timestamp, String message, String details) {
+    public ErrorDTO(LocalDateTime timestamp, String message) {
         this.timestamp = timestamp;
         this.message = message;
-        this.details = details;
     }
 
     public LocalDateTime getTimestamp() {
@@ -21,7 +19,4 @@ public class ErrorDTO {
         return message;
     }
 
-    public String getDetails() {
-        return details;
-    }
 }
