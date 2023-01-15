@@ -11,28 +11,15 @@ import com.godov.crudskyweaver.domain.jooq.enums.ResultEnum;
 import com.godov.crudskyweaver.domain.jooq.tables.records.MatchesRecord;
 import com.godov.crudskyweaver.enums.Hero;
 import com.godov.crudskyweaver.enums.Result;
+import org.jooq.Record;
+import org.jooq.*;
+import org.jooq.impl.Internal;
+import org.jooq.impl.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Function5;
-import org.jooq.Identity;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Records;
-import org.jooq.Row5;
-import org.jooq.Schema;
-import org.jooq.SelectField;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
-import org.jooq.impl.DSL;
-import org.jooq.impl.EnumConverter;
-import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 
 
 /**
@@ -79,7 +66,12 @@ public class Matches extends TableImpl<MatchesRecord> {
     /**
      * The column <code>public.matches.played_on</code>.
      */
-    public final TableField<MatchesRecord, LocalDate> PLAYED_ON = createField(DSL.name("played_on"), SQLDataType.LOCALDATE, this, "");
+    public final TableField<MatchesRecord, LocalDate> PLAYED_ON = createField(DSL.name("played_on"), SQLDataType.LOCALDATE.nullable(false), this, "");
+
+    /**
+     * The column <code>public.matches.opponent_address</code>.
+     */
+    public final TableField<MatchesRecord, String> OPPONENT_ADDRESS = createField(DSL.name("opponent_address"), SQLDataType.VARCHAR(42), this, "");
 
     private Matches(Name alias, Table<MatchesRecord> aliased) {
         this(alias, aliased, null);
@@ -130,6 +122,13 @@ public class Matches extends TableImpl<MatchesRecord> {
     }
 
     @Override
+    public List<Check<MatchesRecord>> getChecks() {
+        return Arrays.asList(
+            Internal.createCheck(this, DSL.name("opponent_address_check"), "((((opponent_address)::text ~~ '0x%'::text) AND (char_length((opponent_address)::text) = 42)))", true)
+        );
+    }
+
+    @Override
     public Matches as(String alias) {
         return new Matches(DSL.name(alias), this);
     }
@@ -169,18 +168,18 @@ public class Matches extends TableImpl<MatchesRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, Hero, Hero, Result, LocalDate> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row6<Long, Hero, Hero, Result, LocalDate, String> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function5<? super Long, ? super Hero, ? super Hero, ? super Result, ? super LocalDate, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super Long, ? super Hero, ? super Hero, ? super Result, ? super LocalDate, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -188,7 +187,7 @@ public class Matches extends TableImpl<MatchesRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function5<? super Long, ? super Hero, ? super Hero, ? super Result, ? super LocalDate, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super Long, ? super Hero, ? super Hero, ? super Result, ? super LocalDate, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

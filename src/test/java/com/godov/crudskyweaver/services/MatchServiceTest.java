@@ -1,7 +1,9 @@
 package com.godov.crudskyweaver.services;
 
-import com.godov.crudskyweaver.dto.match.MatchDTORequest;
+import com.godov.crudskyweaver.dto.match.request.SaveMatchDTORequest;
+import com.godov.crudskyweaver.dto.match.request.UpdateMatchDTORequest;
 import com.godov.crudskyweaver.repository.MatchRepository;
+import com.godov.crudskyweaver.repository.PlayerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -21,11 +22,13 @@ class MatchServiceTest {
 
     @Mock
     private MatchRepository matchRepository;
+    @Mock
+    private PlayerRepository playerRepository;
     private MatchService matchService;
 
     @BeforeEach
     void setUp() {
-        matchService = new MatchService(matchRepository);
+        matchService = new MatchService(matchRepository, playerRepository);
     }
 
     @Test
@@ -36,19 +39,29 @@ class MatchServiceTest {
         matchService.findAll(pageable);
         //then
         verify(matchRepository).findAll(pageable);
+    }
 
+    @Test
+    void canFindAllWithFullInfo(){
+        //given
+        Pageable pageable = mock(Pageable.class);
+        //when
+        matchService.findAllWithFullInfo(pageable);
+        //then
+        verify(matchRepository).findAllWithFullInfo(pageable);
     }
 
     @Test
     void canChangePlayedOnFieldIfNullToNowAndThenSave() {
         //given
-        MatchDTORequest matchDTORequestWithPlayedOnNull = MatchDTORequest
+        SaveMatchDTORequest matchDTORequestWithPlayedOnNull = SaveMatchDTORequest
                 .builder()
                 .playedOn(null)
                 .build();
         //when
         matchService.save(matchDTORequestWithPlayedOnNull);
         //then
+        verify(playerRepository).exists(matchDTORequestWithPlayedOnNull.getOpponentAddress());
         assertEquals(LocalDate.now(), matchDTORequestWithPlayedOnNull.getPlayedOn());
         verify(matchRepository).save(matchDTORequestWithPlayedOnNull);
     }
@@ -57,13 +70,14 @@ class MatchServiceTest {
         @Test
         void canChangePlayedOnFieldIAfterLocalDateNowToNowAndThenSave() {
             //given
-            MatchDTORequest matchDTORequestWithPlayedOnAfterLocalDateNow = MatchDTORequest
+            SaveMatchDTORequest matchDTORequestWithPlayedOnAfterLocalDateNow = SaveMatchDTORequest
                     .builder()
                     .playedOn(LocalDate.MAX)
                     .build();
             //when
             matchService.save(matchDTORequestWithPlayedOnAfterLocalDateNow);
             //then
+            verify(playerRepository).exists(matchDTORequestWithPlayedOnAfterLocalDateNow.getOpponentAddress());
             assertEquals(LocalDate.now(), matchDTORequestWithPlayedOnAfterLocalDateNow.getPlayedOn());
             verify(matchRepository).save(matchDTORequestWithPlayedOnAfterLocalDateNow);
 
@@ -90,17 +104,16 @@ class MatchServiceTest {
     }
 
     @Test
-    void canChangePlayedOnFieldIfAfterLocalDateNowToNullAndThenUpdate() {
+    void canUpdate() {
         //given
         Long validId = 1L;
-        MatchDTORequest matchDTORequestWithPlayedOnAfterLocalDateNow = MatchDTORequest
+        UpdateMatchDTORequest matchDTORequestWithPlayedOnAfterLocalDateNow = UpdateMatchDTORequest
                 .builder()
-                .playedOn(LocalDate.MAX)
+                .playedOn(LocalDate.now())
                 .build();
         //when
         matchService.update(validId, matchDTORequestWithPlayedOnAfterLocalDateNow);
         //then
         verify(matchRepository).update(validId, matchDTORequestWithPlayedOnAfterLocalDateNow);
-        assertNull(matchDTORequestWithPlayedOnAfterLocalDateNow.getPlayedOn());
     }
 }

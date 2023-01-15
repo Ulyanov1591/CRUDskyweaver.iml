@@ -1,15 +1,19 @@
 package com.godov.crudskyweaver.controllers;
 
-import com.godov.crudskyweaver.dto.match.MatchDTOResponse;
-import com.godov.crudskyweaver.dto.match.MatchDTORequest;
+import com.godov.crudskyweaver.dto.match.request.SaveMatchDTORequest;
+import com.godov.crudskyweaver.dto.match.request.UpdateMatchDTORequest;
+import com.godov.crudskyweaver.dto.match.response.FullInfoMatchDTOResponse;
+import com.godov.crudskyweaver.dto.match.response.MatchDTOResponse;
 import com.godov.crudskyweaver.services.MatchService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.*;
+
 import javax.validation.Valid;
 
 @RestController()
@@ -26,14 +30,24 @@ public class MatchController {
         return new ResponseEntity<>(outPage, HttpStatus.OK);
     }
 
+    @GetMapping("full-info")
+    public ResponseEntity<Page<FullInfoMatchDTOResponse>> findAllWithFullInfo(
+            @Parameter(hidden = true) @PageableDefault(size = 20) Pageable pageable)
+    {
+        Page<FullInfoMatchDTOResponse> outPage = matchService.findAllWithFullInfo(pageable);
+        return new ResponseEntity<>(outPage, HttpStatus.OK);
+    }
+
     @PostMapping
-    public ResponseEntity<MatchDTOResponse> save(@Valid @RequestBody MatchDTORequest matchDTO) {
-        return new ResponseEntity<>(matchService.save(matchDTO), HttpStatus.CREATED);
+    public ResponseEntity<MatchDTOResponse> save(@Valid @RequestBody SaveMatchDTORequest matchDTORequest) {
+        MatchDTOResponse matchDTOResponse = matchService.save(matchDTORequest);
+        return new ResponseEntity<>(matchDTOResponse, HttpStatus.CREATED);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<MatchDTOResponse> findById(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(matchService.findById(id), HttpStatus.OK);
+        MatchDTOResponse matchDTOResponse = matchService.findById(id);
+        return new ResponseEntity<>(matchDTOResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
@@ -43,7 +57,8 @@ public class MatchController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<MatchDTOResponse> update(@PathVariable("id") Long id, @Valid @RequestBody MatchDTORequest matchDTO) {
-        return new ResponseEntity<>(matchService.update(id, matchDTO), HttpStatus.OK);
+    public ResponseEntity<MatchDTOResponse> update(@PathVariable("id") Long id, @Valid @RequestBody UpdateMatchDTORequest matchDTORequest) {
+        MatchDTOResponse matchDTOResponse = matchService.update(id, matchDTORequest);
+        return new ResponseEntity<>(matchDTOResponse, HttpStatus.OK);
     }
 }

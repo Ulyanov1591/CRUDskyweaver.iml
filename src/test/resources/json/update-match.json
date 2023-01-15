@@ -1,5 +1,6 @@
 {
   "myHero": "ADA",
   "opponentHero": "TITUS",
-  "result": "DRAW"
+  "result": "DRAW",
+  "playedOn": "2022-12-26"
 }

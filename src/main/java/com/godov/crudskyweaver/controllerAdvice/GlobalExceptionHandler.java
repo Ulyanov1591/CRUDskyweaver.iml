@@ -1,7 +1,7 @@
 package com.godov.crudskyweaver.controllerAdvice;
 
 import com.godov.crudskyweaver.dto.ErrorDTO;
-import com.godov.crudskyweaver.exceptions.NoSuchMatchFoundException;
+import com.godov.crudskyweaver.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NoSuchMatchFoundException.class)
-    public ResponseEntity<ErrorDTO> handleNoSuchMatchFoundException(RuntimeException exception) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorDTO> handleNotFoundException(RuntimeException exception) {
         final ErrorDTO errorDTO = new ErrorDTO(
                 LocalDateTime.now(),
                 exception.getMessage());

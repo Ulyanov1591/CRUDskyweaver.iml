@@ -19,8 +19,16 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
             <column name="result" type="result_enum">
                 <constraints nullable="false"/>
             </column>
-            <column name="played_on" type="date"/>
+            <column name="played_on" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="opponent_address" type="varchar(42)">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
+        <sql>
+            ALTER TABLE matches ADD CONSTRAINT opponent_address_check CHECK (opponent_address LIKE '0x%' AND char_length(opponent_address) = 42);
+        </sql>
     </changeSet>
 
 </databaseChangeLog>

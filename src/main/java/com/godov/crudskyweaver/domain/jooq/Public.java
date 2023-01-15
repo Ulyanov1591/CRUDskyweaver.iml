@@ -5,13 +5,13 @@ package com.godov.crudskyweaver.domain.jooq;
 
 
 import com.godov.crudskyweaver.domain.jooq.tables.Matches;
-
-import java.util.Arrays;
-import java.util.List;
-
+import com.godov.crudskyweaver.domain.jooq.tables.Players;
 import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -33,6 +33,11 @@ public class Public extends SchemaImpl {
     public final Matches MATCHES = Matches.MATCHES;
 
     /**
+     * The table <code>public.players</code>.
+     */
+    public final Players PLAYERS = Players.PLAYERS;
+
+    /**
      * No further instances allowed
      */
     private Public() {
@@ -48,7 +53,8 @@ public class Public extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
-            Matches.MATCHES
+            Matches.MATCHES,
+            Players.PLAYERS
         );
     }
 }

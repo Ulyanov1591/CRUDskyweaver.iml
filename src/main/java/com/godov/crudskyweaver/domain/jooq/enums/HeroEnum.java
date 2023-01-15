@@ -5,7 +5,6 @@ package com.godov.crudskyweaver.domain.jooq.enums;
 
 
 import com.godov.crudskyweaver.domain.jooq.Public;
-
 import org.jooq.Catalog;
 import org.jooq.EnumType;
 import org.jooq.Schema;
