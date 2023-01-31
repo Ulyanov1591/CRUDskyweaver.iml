@@ -101,7 +101,7 @@ public class Players extends TableImpl<PlayersRecord> {
 
     @Override
     public List<UniqueKey<PlayersRecord>> getUniqueKeys() {
-        return Arrays.asList(Keys.UNIQUE_NICKNAME);
+        return Arrays.asList(Keys.UNIQUE_PLAYERS_NICKNAME);
     }
 
     @Override

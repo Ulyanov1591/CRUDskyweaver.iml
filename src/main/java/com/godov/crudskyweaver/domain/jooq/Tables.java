@@ -6,6 +6,7 @@ package com.godov.crudskyweaver.domain.jooq;
 
 import com.godov.crudskyweaver.domain.jooq.tables.Matches;
 import com.godov.crudskyweaver.domain.jooq.tables.Players;
+import com.godov.crudskyweaver.domain.jooq.tables.Users;
 
 
 /**
@@ -23,4 +24,9 @@ public class Tables {
      * The table <code>public.players</code>.
      */
     public static final Players PLAYERS = Players.PLAYERS;
+
+    /**
+     * The table <code>public.users</code>.
+     */
+    public static final Users USERS = Users.USERS;
 }

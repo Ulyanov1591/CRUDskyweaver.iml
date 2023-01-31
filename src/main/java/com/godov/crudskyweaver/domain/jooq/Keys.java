@@ -6,8 +6,10 @@ package com.godov.crudskyweaver.domain.jooq;
 
 import com.godov.crudskyweaver.domain.jooq.tables.Matches;
 import com.godov.crudskyweaver.domain.jooq.tables.Players;
+import com.godov.crudskyweaver.domain.jooq.tables.Users;
 import com.godov.crudskyweaver.domain.jooq.tables.records.MatchesRecord;
 import com.godov.crudskyweaver.domain.jooq.tables.records.PlayersRecord;
+import com.godov.crudskyweaver.domain.jooq.tables.records.UsersRecord;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
@@ -27,5 +29,8 @@ public class Keys {
 
     public static final UniqueKey<MatchesRecord> PK_MATCHES_ID = Internal.createUniqueKey(Matches.MATCHES, DSL.name("pk_matches_id"), new TableField[] { Matches.MATCHES.ID }, true);
     public static final UniqueKey<PlayersRecord> PK_PLAYERS_ADDRESS = Internal.createUniqueKey(Players.PLAYERS, DSL.name("pk_players_address"), new TableField[] { Players.PLAYERS.POLYGON_ADDRESS }, true);
-    public static final UniqueKey<PlayersRecord> UNIQUE_NICKNAME = Internal.createUniqueKey(Players.PLAYERS, DSL.name("unique_nickname"), new TableField[] { Players.PLAYERS.NICKNAME }, true);
+    public static final UniqueKey<PlayersRecord> UNIQUE_PLAYERS_NICKNAME = Internal.createUniqueKey(Players.PLAYERS, DSL.name("unique_players_nickname"), new TableField[] { Players.PLAYERS.NICKNAME }, true);
+    public static final UniqueKey<UsersRecord> PK_USERS_ID = Internal.createUniqueKey(Users.USERS, DSL.name("pk_users_id"), new TableField[] { Users.USERS.ID }, true);
+    public static final UniqueKey<UsersRecord> UNIQUE_USERS_EMAIL = Internal.createUniqueKey(Users.USERS, DSL.name("unique_users_email"), new TableField[] { Users.USERS.EMAIL }, true);
+    public static final UniqueKey<UsersRecord> UNIQUE_USERS_NICKNAME = Internal.createUniqueKey(Users.USERS, DSL.name("unique_users_nickname"), new TableField[] { Users.USERS.NICKNAME }, true);
 }

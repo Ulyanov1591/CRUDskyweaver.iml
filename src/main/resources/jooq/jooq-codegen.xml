@@ -20,6 +20,7 @@
             <inputSchema>public</inputSchema>
 
             <forcedTypes>
+                <!-- Hero Enum -->
                 <forcedType>
                     <!-- Specify the Java type of your custom type. This corresponds to the Converter's <U> type. -->
                     <userType>com.godov.crudskyweaver.enums.Hero</userType>
@@ -29,11 +30,19 @@
                     <includeExpression>.*_hero</includeExpression>
                     <includeTypes>hero_enum</includeTypes>
                 </forcedType>
+                <!-- Result Enum -->
                 <forcedType>
                     <userType>com.godov.crudskyweaver.enums.Result</userType>
                     <enumConverter>true</enumConverter>
                     <includeExpression>result</includeExpression>
                     <includeTypes>result_enum</includeTypes>
+                </forcedType>
+                <!-- JSONB -->
+                <forcedType>
+                    <userType>com.godov.crudskyweaver.dto.user.AdditionalInfo</userType>
+                    <binding>com.godov.crudskyweaver.config.jooq.binding.PostgresJsonbToAdditionalInfoBinding</binding>
+                    <includeExpression>additional_info</includeExpression>
+                    <includeTypes>JSONB</includeTypes>
                 </forcedType>
             </forcedTypes>
 

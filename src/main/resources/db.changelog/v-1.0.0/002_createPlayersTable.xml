@@ -11,7 +11,7 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
                 <constraints primaryKey="true" primaryKeyName="pk_players_address"/>
             </column>
             <column name="nickname" type="varchar(255)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="unique_nickname"/>
+                <constraints nullable="false" unique="true" uniqueConstraintName="unique_players_nickname"/>
             </column>
             <column name="joined_on" type="date">
                 <constraints nullable="false"/>

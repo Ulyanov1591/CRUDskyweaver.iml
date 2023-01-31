@@ -6,6 +6,7 @@ package com.godov.crudskyweaver.domain.jooq;
 
 import com.godov.crudskyweaver.domain.jooq.tables.Matches;
 import com.godov.crudskyweaver.domain.jooq.tables.Players;
+import com.godov.crudskyweaver.domain.jooq.tables.Users;
 import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
@@ -38,6 +39,11 @@ public class Public extends SchemaImpl {
     public final Players PLAYERS = Players.PLAYERS;
 
     /**
+     * The table <code>public.users</code>.
+     */
+    public final Users USERS = Users.USERS;
+
+    /**
      * No further instances allowed
      */
     private Public() {
@@ -54,7 +60,8 @@ public class Public extends SchemaImpl {
     public final List<Table<?>> getTables() {
         return Arrays.asList(
             Matches.MATCHES,
-            Players.PLAYERS
+            Players.PLAYERS,
+            Users.USERS
         );
     }
 }

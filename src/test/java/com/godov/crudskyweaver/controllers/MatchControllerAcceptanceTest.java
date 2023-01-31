@@ -36,7 +36,7 @@ class MatchControllerAcceptanceTest {
     @Sql(value = {"/sql/matches/set-up-db-before-find-all.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findAllThenReturnDefaultPageOfMatchDTOResponse() throws Exception {
         //given
-        final String expectedPage = utils.getJsonFromResources("json/default-match-page.json", MatchDTOResponse.class);
+        final String expectedPage = utils.getJsonFromResources("json/match/default-match-page.json", MatchDTOResponse.class);
         //when then
         mockMvc.perform(get("/api/v1/matches"))
                 .andDo(print())
@@ -49,7 +49,7 @@ class MatchControllerAcceptanceTest {
     @Sql(value = {"/sql/matches/set-up-db-before-find-all.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findAllWhenRequestParamsNotDefaultThenReturnPageOfMatchDTOResponse() throws Exception {
         //given
-        final String expectedPage = utils.getJsonFromResources("json/custom-match-page.json", MatchDTOResponse.class);
+        final String expectedPage = utils.getJsonFromResources("json/match/custom-match-page.json", MatchDTOResponse.class);
         //when then
         mockMvc.perform(get("/api/v1/matches?size=20&page=2"))
                 .andDo(print())
@@ -62,7 +62,7 @@ class MatchControllerAcceptanceTest {
     @Sql(value = {"/sql/matches/set-up-db-before-find-all-with-full-info.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findAllWithFullInfoThenReturnPageOfFullInfoMatchDTORequest() throws Exception {
         //given
-        final String expectedPage = utils.getJsonFromResources("json/find-all-with-full-info.json", MatchDTOResponse.class);
+        final String expectedPage = utils.getJsonFromResources("json/match/find-all-with-full-info.json", MatchDTOResponse.class);
         //when then
         mockMvc.perform(get("/api/v1/matches/full-info"))
                 .andDo(print())
@@ -71,12 +71,12 @@ class MatchControllerAcceptanceTest {
     }
 
     @Test
-    @DisplayName("Must return DTO of saved entity")
+    @DisplayName("Must return DTO of saved match")
     @Sql(value = {"/sql/matches/set-up-db-before-save.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void saveThenReturnSavedDTO() throws Exception {
         //given
-        final String content = utils.getJsonFromResources("json/save-match.json", SaveMatchDTORequest.class);
-        final String expectedMatch = utils.getJsonFromResources("json/saved-match.json", MatchDTOResponse.class);
+        final String content = utils.getJsonFromResources("json/match/save-match.json", SaveMatchDTORequest.class);
+        final String expectedMatch = utils.getJsonFromResources("json/match/saved-match.json", MatchDTOResponse.class);
         //when then
         mockMvc.perform(post("/api/v1/matches")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +93,7 @@ class MatchControllerAcceptanceTest {
     void findByValidIdThenReturnMatchDTO() throws Exception {
         //given
         Long validId = 1L;
-        final String expectedMatch = utils.getJsonFromResources("json/found-by-id.json", MatchDTOResponse.class);
+        final String expectedMatch = utils.getJsonFromResources("json/match/found-by-id.json", MatchDTOResponse.class);
         //when then
         mockMvc.perform(get("/api/v1/matches/{id}", validId))
                 .andDo(print())
@@ -142,10 +142,11 @@ class MatchControllerAcceptanceTest {
     @Sql(value = {"/sql/matches/set-up-db-before-update.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void updateExistingEntityThenReturnUpdatedMatchDTO() throws Exception {
         //given
-        final String content = utils.getJsonFromResources("json/update-match.json", UpdateMatchDTORequest.class);
-        final String expectedMatch = utils.getJsonFromResources("json/updated-match.json", MatchDTOResponse.class);
+        Long validId = 1L;
+        final String content = utils.getJsonFromResources("json/match/update-match.json", UpdateMatchDTORequest.class);
+        final String expectedMatch = utils.getJsonFromResources("json/match/updated-match.json", MatchDTOResponse.class);
         //when then
-        mockMvc.perform(put("/api/v1/matches/{id}", 1L)
+        mockMvc.perform(put("/api/v1/matches/{id}", validId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andDo(print())
