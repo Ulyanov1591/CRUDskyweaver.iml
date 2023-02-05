@@ -29,10 +29,8 @@ public class PostgresJsonbToAdditionalInfoConverter implements Converter<JSONB, 
     @Override
     public JSONB to(AdditionalInfo values) {
         if(values == null){
-            log.warn("values equal null");
             return EMPTY_JSONB;
         }
-        log.info("getting jsonb values");
         return getJsonb(values);
     }
 
@@ -50,7 +48,6 @@ public class PostgresJsonbToAdditionalInfoConverter implements Converter<JSONB, 
         try{
             return JSONB.valueOf(objectMapper.writeValueAsString(value));
         } catch (JsonProcessingException e) {
-            log.warn("Error writing value to DB Exception: [{}]", e.getMessage());
             e.printStackTrace();
         }
         return EMPTY_JSONB;

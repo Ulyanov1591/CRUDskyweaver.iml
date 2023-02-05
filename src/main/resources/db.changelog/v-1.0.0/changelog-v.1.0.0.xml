@@ -10,5 +10,6 @@
     <include file="003_createUsersTable.xml" relativeToChangelogFile="true"/>
     <include file="004_createEnumTypes.xml" relativeToChangelogFile="true"/>
     <include file="005_createMatchesTable.xml" relativeToChangelogFile="true"/>
+    <include file="006_addIndicesToMatchesTable.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
