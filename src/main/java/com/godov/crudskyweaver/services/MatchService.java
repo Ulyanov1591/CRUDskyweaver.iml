@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -23,12 +24,12 @@ public class MatchService {
     private final MatchRepository matchRepository;
     private final PlayerRepository playerRepository;
 
-    public Page<MatchDTOResponse> findAll(Pageable pageable) {
-        return matchRepository.findAll(pageable);
+    public Page<MatchDTOResponse> findAll(Pageable pageable, Map<String, String[]> filter){
+        return matchRepository.findAll(pageable, filter);
     }
 
-    public Page<FullInfoMatchDTOResponse> findAllWithFullInfo(Pageable pageable) {
-        return matchRepository.findAllWithFullInfo(pageable);
+    public Page<FullInfoMatchDTOResponse> findAllWithFullInfo(Pageable pageable, Map<String, String[]> filter) {
+        return matchRepository.findAllWithFullInfo(pageable, filter);
     }
 
     @Transactional("transactionManager")

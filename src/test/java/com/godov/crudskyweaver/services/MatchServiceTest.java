@@ -11,7 +11,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -35,20 +37,22 @@ class MatchServiceTest {
     void canFindAll() {
         //given
         Pageable pageable = mock(Pageable.class);
+        Map<String, String[]> filter = mock(Map.class);
         //when
-        matchService.findAll(pageable);
+        matchService.findAll(pageable, filter);
         //then
-        verify(matchRepository).findAll(pageable);
+        verify(matchRepository).findAll(pageable, filter);
     }
 
     @Test
     void canFindAllWithFullInfo(){
         //given
         Pageable pageable = mock(Pageable.class);
+        Map<String, String[]> filter = mock(Map.class);
         //when
-        matchService.findAllWithFullInfo(pageable);
+        matchService.findAll(pageable, filter);
         //then
-        verify(matchRepository).findAllWithFullInfo(pageable);
+        verify(matchRepository).findAll(pageable, filter);
     }
 
     @Test

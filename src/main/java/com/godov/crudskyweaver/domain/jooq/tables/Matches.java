@@ -4,6 +4,7 @@
 package com.godov.crudskyweaver.domain.jooq.tables;
 
 
+import com.godov.crudskyweaver.domain.jooq.Indexes;
 import com.godov.crudskyweaver.domain.jooq.Keys;
 import com.godov.crudskyweaver.domain.jooq.Public;
 import com.godov.crudskyweaver.domain.jooq.enums.HeroEnum;
@@ -109,6 +110,11 @@ public class Matches extends TableImpl<MatchesRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Public.PUBLIC;
+    }
+
+    @Override
+    public List<Index> getIndexes() {
+        return Arrays.asList(Indexes.IDX_MATCHES_OPPONENT_ADDRESS);
     }
 
     @Override

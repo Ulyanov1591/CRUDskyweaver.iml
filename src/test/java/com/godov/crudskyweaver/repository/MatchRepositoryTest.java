@@ -17,7 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,11 +35,12 @@ class MatchRepositoryTest {
     @Test
     @DisplayName("Must return MatchDTOResponse of found record")
     @Sql(value = {"/sql/matches/set-up-db-before-find-all.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    void findAllMatchesAndReturnPageable(){
+    void findAllMatchesAndReturnPageable() throws SQLException {
         //given
         Pageable pageable = PageRequest.of(1,20);
+        Map<String, String[]> filter = new HashMap<>();
         //when
-        Page<MatchDTOResponse> actual = matchRepository.findAll(pageable);
+        Page<MatchDTOResponse> actual = matchRepository.findAll(pageable, filter);
         //then
         assertEquals(20, actual.getSize());
         assertEquals(20, actual.getPageable().getOffset());

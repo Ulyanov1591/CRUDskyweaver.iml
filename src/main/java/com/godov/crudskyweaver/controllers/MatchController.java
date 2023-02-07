@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController()
 @RequestMapping("/api/v1/matches")
@@ -24,17 +27,35 @@ public class MatchController {
 
     @GetMapping
     public ResponseEntity<Page<MatchDTOResponse>> findAll(
-            @Parameter(hidden = true) @PageableDefault(size = 20) Pageable pageable)
+            @Parameter(hidden = true) @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(required = false) String[] myHero,
+            @RequestParam(required = false) String[] opponentHero,
+            @RequestParam(required = false) String[] result
+    )
     {
-        Page<MatchDTOResponse> outPage = matchService.findAll(pageable);
+        Map<String, String[]> filter = new HashMap<>();
+        filter.put("my_hero", myHero);
+        filter.put("opponent_hero", opponentHero);
+        filter.put("result", result);
+
+        Page<MatchDTOResponse> outPage = matchService.findAll(pageable, filter);
         return new ResponseEntity<>(outPage, HttpStatus.OK);
     }
 
     @GetMapping("full-info")
     public ResponseEntity<Page<FullInfoMatchDTOResponse>> findAllWithFullInfo(
-            @Parameter(hidden = true) @PageableDefault(size = 20) Pageable pageable)
+            @Parameter(hidden = true) @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(required = false) String[] myHero,
+            @RequestParam(required = false) String[] opponentHero,
+            @RequestParam(required = false) String[] result
+    )
     {
-        Page<FullInfoMatchDTOResponse> outPage = matchService.findAllWithFullInfo(pageable);
+        Map<String, String[]> filter = new HashMap<>();
+        filter.put("my_hero", myHero);
+        filter.put("opponent_hero", opponentHero);
+        filter.put("result", result);
+
+        Page<FullInfoMatchDTOResponse> outPage = matchService.findAllWithFullInfo(pageable, filter);
         return new ResponseEntity<>(outPage, HttpStatus.OK);
     }
 
