@@ -6,6 +6,7 @@ import com.godov.crudskyweaver.dto.match.request.UpdateMatchDTORequest;
 import com.godov.crudskyweaver.dto.match.response.FullInfoMatchDTOResponse;
 import com.godov.crudskyweaver.dto.match.response.MatchDTOResponse;
 import com.godov.crudskyweaver.enums.Hero;
+import com.godov.crudskyweaver.enums.Result;
 import com.godov.crudskyweaver.exceptions.NotFoundException;
 import com.godov.crudskyweaver.repository.MatchRepository;
 import lombok.AllArgsConstructor;
@@ -46,7 +47,7 @@ public class MatchRepositoryImpl implements MatchRepository {
         if (filter.get("result") != null) {
             condition = condition.and(MATCHES.RESULT.in(
                     Arrays.stream(filter.get("result"))
-                            .map(Hero::valueOf).collect(Collectors.toList())));
+                            .map(Result::valueOf).collect(Collectors.toList())));
         }
         return condition;
     }
